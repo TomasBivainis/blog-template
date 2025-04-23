@@ -13,37 +13,42 @@ function parseMetadata(meta) {
     properties[key] = value;
   });
 
-  console.log(properties);
-
-  let postName;
-
-  if (properties["name"] === undefined) {
-    postName = file.split(".")[0];
-  } else {
-    nampostNamee = properties["name"];
-  }
-
-  postName += ".html";
-
-  let templateName;
-
-  if (properties["template"] === undefined) {
-    templateName = "post";
-  } else {
-    templateName = properties["template"];
-  }
-
-  let postDate = properties["date"];
-
-  let categories = [];
-
-  if (properties["categories"] !== undefined) {
-    properties["categories"].split(", ").forEach((category) => {
-      categories.add(category);
-    });
-  }
-
   return properties;
+}
+
+function fillTemplate(properties) {
+  const templateName = properties["template"] || "post";
+  const templatePath = path.join(
+    __dirname,
+    "templates",
+    `${templateName}.html`
+  );
+
+  if (!fs.existsSync(templatePath)) {
+    throw new Error(`Template "${templateName}" not found.`);
+  }
+
+  let templateContent = fs.readFileSync(templatePath, "utf8");
+
+  // Replace placeholders in the template with values from properties
+  Object.keys(properties).forEach((key) => {
+    const placeholder = new RegExp(`<[a-z0-9]* id="${key}"></[a-z0-9]*>`, "g");
+    templateContent = templateContent.replace(placeholder, (match) => {
+      return match.replace("><", `>${properties[key]}<`);
+    });
+  });
+
+  return templateContent;
+}
+
+function writePosts(properties) {
+  console.log(properties);
+  const postName = properties["name"];
+  const filledTemplate = fillTemplate(properties);
+
+  console.log(postName);
+
+  fs.writeFileSync(path.join(compilePostsFolder, postName), filledTemplate);
 }
 
 function parseMarkdown() {
@@ -57,11 +62,14 @@ function parseMarkdown() {
       const splitData = fileText.split("---\n");
 
       const meta = splitData[1].trim();
-      const data = splitData[2].trim();
+      const content = splitData[2].trim();
 
       const properties = parseMetadata(meta);
+      properties["name"] = file.split(".")[0] + ".html";
+      properties["title"] = file.split(".")[0].replaceAll("_", " ");
+      properties["content"] = marked(content);
 
-      fs.writeFileSync(path.join(compilePostsFolder, postName), marked(data));
+      writePosts(properties);
     });
   });
 }
@@ -74,8 +82,15 @@ function clearPosts() {
   });
 }
 
-//TODO: implement check for _posts folder
+function checkForPostsFolder() {
+  if (!fs.existsSync(compilePostsFolder)) {
+    fs.mkdirSync(compilePostsFolder);
+  }
+}
+
+//TODO: implement check for posts folder
 function main() {
+  checkForPostsFolder();
   clearPosts();
   parseMarkdown();
 }
