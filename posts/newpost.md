@@ -1,7 +1,0 @@
-# balas
-
-## kodle
-
-### trys
-
-- asdfasd
