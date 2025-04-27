@@ -1,9 +1,7 @@
 const fs = require("fs");
 const path = require("path");
+const yaml = require("yaml");
 const { marked } = require("marked");
-
-const postsFolder = path.join(__dirname, "posts");
-const compilePostsFolder = path.join(__dirname, "src", "posts");
 
 function parseMetadata(meta) {
   const properties = {};
@@ -41,17 +39,14 @@ function fillTemplate(properties) {
   return templateContent;
 }
 
-function writePosts(properties) {
-  console.log(properties);
+function writePosts(properties, compilePostsFolder) {
   const postName = properties["name"];
   const filledTemplate = fillTemplate(properties);
-
-  console.log(postName);
 
   fs.writeFileSync(path.join(compilePostsFolder, postName), filledTemplate);
 }
 
-function parseMarkdown() {
+function parseMarkdown(postsFolder) {
   fs.readdir(postsFolder, (err, files) => {
     if (err) {
       return console.error("Unable to scan directory", err);
@@ -74,7 +69,7 @@ function parseMarkdown() {
   });
 }
 
-function clearPosts() {
+function clearPosts(compilePostsFolder) {
   const files = fs.readdirSync(compilePostsFolder);
 
   files.forEach((file) => {
@@ -82,16 +77,35 @@ function clearPosts() {
   });
 }
 
-function checkForPostsFolder() {
+function checkFolders() {
   if (!fs.existsSync(compilePostsFolder)) {
     fs.mkdirSync(compilePostsFolder);
   }
 }
 
+function parseConfigFile(configFilePath) {
+  if (!fs.existsSync(configFilePath)) {
+    throw new Error("The config file (config.yml) does not exist.");
+  }
+
+  const file = fs.readFileSync(configFilePath, "utf-8");
+  const data = yaml.parse(file);
+
+  return data;
+}
+
 //TODO: implement check for posts folder
 function main() {
+  const postsPath = path.join(__dirname, "posts");
+  const parsedPostsPath = path.join(__dirname, "src", "posts");
+  const configFilePath = path.join(__dirname, "config.yaml");
+
+  const configData = parseConfigFile(configFilePath);
+
   checkForPostsFolder();
+
   clearPosts();
+
   parseMarkdown();
 }
 
