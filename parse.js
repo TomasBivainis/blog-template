@@ -3,10 +3,10 @@ const path = require("path");
 const yaml = require("yaml");
 const { marked } = require("marked");
 
-function parseMetadata(meta) {
+function parseMetadata(rawMetaData) {
   const properties = {};
 
-  meta.split("\n").forEach((line) => {
+  rawMetaData.split("\n").forEach((line) => {
     const [key, value] = line.split(": ");
     properties[key] = value;
   });
@@ -14,8 +14,17 @@ function parseMetadata(meta) {
   return properties;
 }
 
-function fillTemplate(properties) {
-  const templateName = properties["template"] || "post";
+function wrapContent(content, element, id) {
+  return `<${element} id="${id}">${content}</${element}>`;
+}
+
+/*
+ * Fills the given template with the elements
+ * given.
+ */
+function fillTemplate(elements, template = "post") {
+  const templateName = template || "post";
+
   const templatePath = path.join(
     __dirname,
     "templates",
@@ -29,24 +38,21 @@ function fillTemplate(properties) {
   let templateContent = fs.readFileSync(templatePath, "utf8");
 
   // Replace placeholders in the template with values from properties
-  Object.keys(properties).forEach((key) => {
-    const placeholder = new RegExp(`<[a-z0-9]* id="${key}"></[a-z0-9]*>`, "g");
+  Object.keys(elements).forEach((key) => {
+    const placeholder = new RegExp(`<${key}*(.+)*/>`, "gi");
     templateContent = templateContent.replace(placeholder, (match) => {
-      return match.replace("><", `>${properties[key]}<`);
+      return elements[key];
     });
   });
 
   return templateContent;
 }
 
-function writePosts(properties, compilePostsFolder) {
-  const postName = properties["name"];
-  const filledTemplate = fillTemplate(properties);
-
-  fs.writeFileSync(path.join(compilePostsFolder, postName), filledTemplate);
+function writePosts(postName, filledTemplate, parsedPostsFolder) {
+  fs.writeFileSync(path.join(parsedPostsFolder, postName), filledTemplate);
 }
 
-function parseMarkdown(postsFolder) {
+function parseMarkdown(postsFolder, parsedPostsFolder, blogConfig) {
   fs.readdir(postsFolder, (err, files) => {
     if (err) {
       return console.error("Unable to scan directory", err);
@@ -56,34 +62,60 @@ function parseMarkdown(postsFolder) {
       const fileText = fs.readFileSync(path.join(postsFolder, file), "utf8");
       const splitData = fileText.split("---\n");
 
-      const meta = splitData[1].trim();
       const content = splitData[2].trim();
 
-      const properties = parseMetadata(meta);
-      properties["name"] = file.split(".")[0] + ".html";
-      properties["title"] = file.split(".")[0].replaceAll("_", " ");
-      properties["content"] = marked(content);
+      const elements = {};
 
-      writePosts(properties);
+      const postMetaData = parseMetadata(splitData[1].trim());
+      postMetaData["name"] = file.split(".")[0] + ".html";
+
+      elements["title"] = wrapContent(
+        file.split(".")[0].replaceAll("_", " "),
+        "h1",
+        "title"
+      );
+      elements["content"] = wrapContent(marked(content), "div", "content");
+      elements["date"] = wrapContent(postMetaData["date"], "div", "date");
+      elements["catagories"] = wrapContent(
+        postMetaData["catagories"],
+        "span",
+        "catagories"
+      );
+
+      const parsedContent = fillTemplate(elements, properties["template"]);
+
+      writePosts(properties["name"], parsedContent, parsedPostsFolder);
     });
   });
 }
 
-function clearPosts(compilePostsFolder) {
-  const files = fs.readdirSync(compilePostsFolder);
+function clearPosts(parsedPostsFolder) {
+  const files = fs.readdirSync(parsedPostsFolder);
 
   files.forEach((file) => {
-    fs.rmSync(path.join(compilePostsFolder, file));
+    fs.rmSync(path.join(parsedPostsFolder, file));
   });
 }
 
-function checkFolders() {
+// ? this does not seem good
+function checkFolders(postsPath, compilePostsFolder, configFilePath) {
   if (!fs.existsSync(compilePostsFolder)) {
     fs.mkdirSync(compilePostsFolder);
   }
+
+  if (!fs.existsSync(postsPath)) {
+    fs.mkdirSync(postsPath);
+  }
+
+  if (!fs.existsSync(configFilePath)) {
+    fs.mkdirSync(configFilePath);
+    //throw new Error("Emtpy configuration file.");
+  }
 }
 
+// ? redo if you change the check folder
 function parseConfigFile(configFilePath) {
+  // ? is it necessary? think about it
   if (!fs.existsSync(configFilePath)) {
     throw new Error("The config file (config.yml) does not exist.");
   }
@@ -94,19 +126,18 @@ function parseConfigFile(configFilePath) {
   return data;
 }
 
-//TODO: implement check for posts folder
 function main() {
   const postsPath = path.join(__dirname, "posts");
   const parsedPostsPath = path.join(__dirname, "src", "posts");
   const configFilePath = path.join(__dirname, "config.yaml");
 
-  const configData = parseConfigFile(configFilePath);
+  checkFolders(postsPath, parsedPostsPath, configFilePath); // ?
 
-  checkForPostsFolder();
+  const configData = parseConfigFile(configFilePath); // ?
 
-  clearPosts();
+  clearPosts(parsedPostsPath);
 
-  parseMarkdown();
+  parseMarkdown(postsPath, parsedPostsPath, configData);
 }
 
 main();
