@@ -2,55 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const yaml = require("yaml");
 const { marked } = require("marked");
-const { labas, lobos } = require("./util/module");
-
-/*
- * Parses the given metadata for post specific data.
- */
-function parseMetadata(rawMetaData, postMetaData) {
-  rawMetaData.split("\n").forEach((line) => {
-    const [key, value] = line.split(": ");
-    postMetaData[key] = value;
-  });
-}
-
-/*
- * Wraps the given content with the given type of HTML
- * element and gives it the given id.
- */
-function wrapContent(content, element, id = "") {
-  return `<${element} id="${id}">${content}</${element}>`;
-}
-
-/*
- * Fills the given template with the elements
- * given.
- */
-function fillTemplate(elements, template = "post") {
-  const templateName = template || "post";
-
-  const templatePath = path.join(
-    __dirname,
-    "templates",
-    `${templateName}.html`
-  );
-
-  if (!fs.existsSync(templatePath)) {
-    throw new Error(`Template "${templateName}" not found.`);
-  }
-
-  let templateContent = fs.readFileSync(templatePath, "utf8");
-
-  // Replace placeholders in the template with values from properties
-  Object.keys(elements).forEach((key) => {
-    const placeholder = new RegExp(`<${key}*(.+)*/>`, "gi");
-    templateContent = templateContent.replace(placeholder, (match) => {
-      return elements[key];
-    });
-  });
-
-  return templateContent;
-}
+const { parseMetadata, wrapContent, fillTemplate } = require("./util/module");
 
 /*
  * Writes the parsed post to a HTML file in the given location.
