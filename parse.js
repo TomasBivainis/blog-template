@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const yaml = require("yaml");
 const { marked } = require("marked");
-const { wrap } = require("module");
+const { labas, lobos } = require("./util/module");
 
 /*
  * Parses the given metadata for post specific data.
