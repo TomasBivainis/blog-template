@@ -3,6 +3,9 @@ const path = require("path");
 const yaml = require("yaml");
 const { marked } = require("marked");
 
+/*
+ * Parses the given metadata for post specific data.
+ */
 function parseMetadata(rawMetaData) {
   const properties = {};
 
@@ -14,7 +17,11 @@ function parseMetadata(rawMetaData) {
   return properties;
 }
 
-function wrapContent(content, element, id) {
+/*
+ * Wraps the given content with the given type of HTML
+ * element and gives it the given id.
+ */
+function wrapContent(content, element, id = "") {
   return `<${element} id="${id}">${content}</${element}>`;
 }
 
@@ -48,10 +55,18 @@ function fillTemplate(elements, template = "post") {
   return templateContent;
 }
 
+/*
+ * Writes the parsed post to a HTML file in the given location.
+ */
 function writePosts(postName, filledTemplate, parsedPostsFolder) {
   fs.writeFileSync(path.join(parsedPostsFolder, postName), filledTemplate);
 }
 
+/*
+ * Parses the posts in the given postsFolder, generates HTML
+ * versions of the posts and writes them to the given
+ * parsedPostsFolder location.
+ */
 function parseMarkdown(postsFolder, parsedPostsFolder, blogConfig) {
   fs.readdir(postsFolder, (err, files) => {
     if (err) {
@@ -89,6 +104,9 @@ function parseMarkdown(postsFolder, parsedPostsFolder, blogConfig) {
   });
 }
 
+/*
+ * Clears the parsed posts.
+ */
 function clearPosts(parsedPostsFolder) {
   const files = fs.readdirSync(parsedPostsFolder);
 
