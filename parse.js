@@ -97,9 +97,9 @@ function parseMarkdown(postsFolder, parsedPostsFolder, blogConfig) {
         "catagories"
       );
 
-      const parsedContent = fillTemplate(elements, properties["template"]);
+      const parsedContent = fillTemplate(elements, postMetaData["template"]);
 
-      writePosts(properties["name"], parsedContent, parsedPostsFolder);
+      writePosts(postMetaData["name"], parsedContent, parsedPostsFolder);
     });
   });
 }
