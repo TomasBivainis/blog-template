@@ -2,19 +2,16 @@ const fs = require("fs");
 const path = require("path");
 const yaml = require("yaml");
 const { marked } = require("marked");
+const { wrap } = require("module");
 
 /*
  * Parses the given metadata for post specific data.
  */
-function parseMetadata(rawMetaData) {
-  const properties = {};
-
+function parseMetadata(rawMetaData, postMetaData) {
   rawMetaData.split("\n").forEach((line) => {
     const [key, value] = line.split(": ");
-    properties[key] = value;
+    postMetaData[key] = value;
   });
-
-  return properties;
 }
 
 /*
@@ -81,7 +78,8 @@ function parseMarkdown(postsFolder, parsedPostsFolder, blogConfig) {
 
       const elements = {};
 
-      const postMetaData = parseMetadata(splitData[1].trim());
+      const postMetaData = JSON.parse(JSON.stringify(blogConfig));
+      parseMetadata(splitData[1].trim(), postMetaData);
       postMetaData["name"] = file.split(".")[0] + ".html";
 
       elements["title"] = wrapContent(
@@ -96,6 +94,7 @@ function parseMarkdown(postsFolder, parsedPostsFolder, blogConfig) {
         "span",
         "catagories"
       );
+      elements["header"] = wrapContent(postMetaData["title"], "h1", "header");
 
       const parsedContent = fillTemplate(elements, postMetaData["template"]);
 
