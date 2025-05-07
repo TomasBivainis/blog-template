@@ -16,7 +16,7 @@ function writePosts(postName, filledTemplate, parsedPostsFolder) {
  * versions of the posts and writes them to the given
  * parsedPostsFolder location.
  */
-function parseMarkdown(postsFolder, parsedPostsFolder, blogConfig) {
+function parseMarkdownPosts(postsFolder, parsedPostsFolder, blogConfig) {
   fs.readdir(postsFolder, (err, files) => {
     if (err) {
       return console.error("Unable to scan directory", err);
@@ -95,10 +95,48 @@ function parseConfigFile(configFilePath) {
   return data;
 }
 
+function generateMainPage(srcPath, templatePath, configDatam, postsPath) {
+  const mainTemplatePath = path.join(templatePath, "main.html");
+
+  if (!fs.existsSync(mainTemplatePath)) {
+    throw new Error("No main page tamplate.");
+  }
+
+  const content = fs.readFileSync(mainTemplatePath);
+
+  const elements = {};
+
+  elements["header"] = configData["title"];
+  elements["description"] = configData["description"];
+
+  let postsElement = "";
+
+  fs.readdir(postsPath, (err, files) => {
+    if (err) {
+      return console.error("Unable to read directory.");
+    }
+
+    files.forEach((file) => {
+      const fileText = fs.readFileSync(path.join(postsPath, file), "utf8");
+      let postElement = `<a href="posts/${file}">${file}</a>`;
+
+      postsElement += postElement;
+    });
+  });
+
+  elements["posts"] = postsElement;
+
+  const filledTemplate = fillTemplate(elements, "main");
+
+  writePosts("index", filledTemplate, srcPath);
+}
+
 function main() {
   const postsPath = path.join(__dirname, "posts");
   const parsedPostsPath = path.join(__dirname, "src", "posts");
   const configFilePath = path.join(__dirname, "config.yaml");
+  const srcPath = path.join(__dirname, "src");
+  const templatePath = path.join(__dirname, "template");
 
   checkFolders(postsPath, parsedPostsPath, configFilePath); // ?
 
@@ -106,7 +144,9 @@ function main() {
 
   clearPosts(parsedPostsPath);
 
-  parseMarkdown(postsPath, parsedPostsPath, configData);
+  parseMarkdownPosts(postsPath, parsedPostsPath, configData);
+
+  generateMainPage(srcPath, templatePath, configData);
 }
 
 main();
