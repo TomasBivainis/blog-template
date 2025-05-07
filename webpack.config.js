@@ -1,5 +1,16 @@
 const path = require("path");
+const fs = require("fs");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+
+let htmlPageNames = fs.readdirSync(path.join(__dirname, "src", "posts"));
+
+let multipleHtmlPlugins = htmlPageNames.map((name) => {
+  return new HtmlWebpackPlugin({
+    template: `./src/posts/${name}`, // relative path to the HTML files
+    filename: `${name}`, // output HTML files
+    chunks: [`${name.split(".")[0]}`], // respective JS files
+  });
+});
 
 module.exports = {
   entry: "./src/index.js",
@@ -28,7 +39,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: "./src/index.html",
     }),
-  ],
+  ].concat(multipleHtmlPlugins),
   mode: "development",
   devtool: "inline-source-map",
 };

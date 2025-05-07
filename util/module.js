@@ -1,3 +1,6 @@
+const path = require("path");
+const fs = require("fs");
+
 /*
  * Parses the given metadata for post specific data.
  */
@@ -20,11 +23,12 @@ function wrapContent(content, element, id = "") {
  * Fills the given template with the elements
  * given.
  */
-function fillTemplate(elements, template = "post") {
+function fillTemplate(elements, template) {
   const templateName = template || "post";
 
   const templatePath = path.join(
     __dirname,
+    "..",
     "templates",
     `${templateName}.html`
   );
@@ -46,8 +50,13 @@ function fillTemplate(elements, template = "post") {
   return templateContent;
 }
 
+function parsePostTitle(fileName) {
+  return fileName.split(".")[0].replace("_", " ");
+}
+
 module.exports = {
   parseMetadata,
   wrapContent,
   fillTemplate,
+  parsePostTitle,
 };

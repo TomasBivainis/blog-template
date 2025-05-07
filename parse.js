@@ -2,7 +2,12 @@ const fs = require("fs");
 const path = require("path");
 const yaml = require("yaml");
 const { marked } = require("marked");
-const { parseMetadata, wrapContent, fillTemplate } = require("./util/module");
+const {
+  parseMetadata,
+  wrapContent,
+  fillTemplate,
+  parsePostTitle,
+} = require("./util/module");
 
 /*
  * Writes the parsed post to a HTML file in the given location.
@@ -95,40 +100,33 @@ function parseConfigFile(configFilePath) {
   return data;
 }
 
-function generateMainPage(srcPath, templatePath, configDatam, postsPath) {
-  const mainTemplatePath = path.join(templatePath, "main.html");
-
-  if (!fs.existsSync(mainTemplatePath)) {
-    throw new Error("No main page tamplate.");
-  }
-
-  const content = fs.readFileSync(mainTemplatePath);
-
+function generateMainPage(srcPath, configData, postsPath) {
   const elements = {};
 
-  elements["header"] = configData["title"];
-  elements["description"] = configData["description"];
+  elements["header"] = wrapContent(configData["title"], "h1", "header");
+  elements["description"] = wrapContent(
+    configData["description"],
+    "div",
+    "description"
+  );
 
   let postsElement = "";
 
-  fs.readdir(postsPath, (err, files) => {
-    if (err) {
-      return console.error("Unable to read directory.");
-    }
+  const files = fs.readdirSync(postsPath);
 
-    files.forEach((file) => {
-      const fileText = fs.readFileSync(path.join(postsPath, file), "utf8");
-      let postElement = `<a href="posts/${file}">${file}</a>`;
+  files.forEach((file) => {
+    let postElement = `<a href="${file.split(".")[0]}.html">${parsePostTitle(
+      file
+    )}</a>`;
 
-      postsElement += postElement;
-    });
+    postsElement += postElement;
   });
 
-  elements["posts"] = postsElement;
+  elements["posts"] = wrapContent(postsElement, "div", "posts");
 
   const filledTemplate = fillTemplate(elements, "main");
 
-  writePosts("index", filledTemplate, srcPath);
+  writePosts("index.html", filledTemplate, srcPath);
 }
 
 function main() {
@@ -146,7 +144,7 @@ function main() {
 
   parseMarkdownPosts(postsPath, parsedPostsPath, configData);
 
-  generateMainPage(srcPath, templatePath, configData);
+  generateMainPage(srcPath, configData, postsPath);
 }
 
 main();
