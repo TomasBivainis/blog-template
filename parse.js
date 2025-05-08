@@ -63,37 +63,18 @@ function parseMarkdownPosts(postsFolder, parsedPostsFolder, blogConfig) {
 /*
  * Clears the parsed posts.
  */
-function clearPosts(parsedPostsFolder) {
-  const files = fs.readdirSync(parsedPostsFolder);
+function clearDist(distPath) {
+  const files = fs.readdirSync(distPath);
 
   files.forEach((file) => {
-    fs.rmSync(path.join(parsedPostsFolder, file));
+    fs.rmSync(path.join(distPath, file));
   });
 }
 
-// ? this does not seem good
-function checkFolders(postsPath, compilePostsFolder, configFilePath) {
-  if (!fs.existsSync(compilePostsFolder)) {
-    fs.mkdirSync(compilePostsFolder);
-  }
-
-  if (!fs.existsSync(postsPath)) {
-    fs.mkdirSync(postsPath);
-  }
-
-  if (!fs.existsSync(configFilePath)) {
-    fs.mkdirSync(configFilePath);
-    //throw new Error("Emtpy configuration file.");
-  }
-}
-
-// ? redo if you change the check folder
+/*
+ * Parses the data from the config file and returns it as a map.
+ */
 function parseConfigFile(configFilePath) {
-  // ? is it necessary? think about it
-  if (!fs.existsSync(configFilePath)) {
-    throw new Error("The config file (config.yml) does not exist.");
-  }
-
   const file = fs.readFileSync(configFilePath, "utf-8");
   const data = yaml.parse(file);
 
@@ -115,9 +96,9 @@ function generateMainPage(srcPath, configData, postsPath) {
   const files = fs.readdirSync(postsPath);
 
   files.forEach((file) => {
-    let postElement = `<a href="${file.split(".")[0]}.html">${parsePostTitle(
-      file
-    )}</a>`;
+    let postElement = `<a href="posts/${
+      file.split(".")[0]
+    }.html">${parsePostTitle(file)}</a>`;
 
     postsElement += postElement;
   });
@@ -131,20 +112,33 @@ function generateMainPage(srcPath, configData, postsPath) {
 
 function main() {
   const postsPath = path.join(__dirname, "posts");
-  const parsedPostsPath = path.join(__dirname, "src", "posts");
+  const distPath = path.join(__dirname, "dist");
+  const parsedPostsPath = path.join(distPath, "posts");
   const configFilePath = path.join(__dirname, "config.yaml");
-  const srcPath = path.join(__dirname, "src");
-  const templatePath = path.join(__dirname, "template");
+  const templatesPath = path.join(__dirname, "templates");
 
-  checkFolders(postsPath, parsedPostsPath, configFilePath); // ?
+  if (!fs.existsSync(templatesPath)) {
+    throw new Error("Templates folder does not exist.");
+  }
 
-  const configData = parseConfigFile(configFilePath); // ?
+  if (!fs.existsSync(configFilePath)) {
+    throw new Error("The config file (config.yml) does not exist.");
+  }
 
-  clearPosts(parsedPostsPath);
+  if (fs.existsSync(distPath)) {
+    fs.rmSync(distPath, { recursive: true });
+  }
+  fs.mkdirSync(distPath);
+  fs.mkdirSync(parsedPostsPath);
+
+  if (!fs.existsSync(postsPath)) {
+    fs.mkdirSync(postsPath);
+  }
+
+  const configData = parseConfigFile(configFilePath);
 
   parseMarkdownPosts(postsPath, parsedPostsPath, configData);
-
-  generateMainPage(srcPath, configData, postsPath);
+  generateMainPage(distPath, configData, postsPath);
 }
 
 main();
