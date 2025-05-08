@@ -110,12 +110,25 @@ function generateMainPage(srcPath, configData, postsPath) {
   writePosts("index.html", filledTemplate, srcPath);
 }
 
+function copyStyles(stylesPath, distPath) {
+  fs.readdir(stylesPath, (err, files) => {
+    if (err) {
+      throw new Error(err);
+    }
+
+    files.forEach((file) => {
+      fs.copyFileSync(path.join(stylesPath, file), path.join(distPath, file));
+    });
+  });
+}
+
 function main() {
   const postsPath = path.join(__dirname, "posts");
   const distPath = path.join(__dirname, "dist");
   const parsedPostsPath = path.join(distPath, "posts");
   const configFilePath = path.join(__dirname, "config.yaml");
   const templatesPath = path.join(__dirname, "templates");
+  const stylesPath = path.join(__dirname, "styles");
 
   if (!fs.existsSync(templatesPath)) {
     throw new Error("Templates folder does not exist.");
@@ -135,10 +148,15 @@ function main() {
     fs.mkdirSync(postsPath);
   }
 
+  if (!fs.existsSync(stylesPath)) {
+    fs.mkdirSync(stylesPath);
+  }
+
   const configData = parseConfigFile(configFilePath);
 
   parseMarkdownPosts(postsPath, parsedPostsPath, configData);
   generateMainPage(distPath, configData, postsPath);
+  copyStyles(stylesPath, distPath);
 }
 
 main();
