@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "html-webpack-plugin": "^5.6.3",
-    "marked": "^15.0.8"
+    "marked": "^15.0.8",
+    "yaml": "^2.7.1"
   }
 }
