@@ -39,13 +39,24 @@ function fillTemplate(elements, template) {
 
   let templateContent = fs.readFileSync(templatePath, "utf8");
 
-  // Replace placeholders in the template with values from properties
-  Object.keys(elements).forEach((key) => {
-    const placeholder = new RegExp(`<${key}*(.+)*/>`, "gi");
-    templateContent = templateContent.replace(placeholder, (match) => {
-      return elements[key];
-    });
-  });
+  // Use a regex to match all combinations of escape characters and placeholders
+  templateContent = templateContent.replace(
+    /(\\*){([^}]+)}/g,
+    (match, backslashes, key) => {
+      const numBackslashes = backslashes.length;
+
+      if (numBackslashes % 2 === 0) {
+        // Even number of backslashes: treat as unescaped placeholder
+        const value = elements[key] || `{${key}}`;
+        return backslashes.slice(0, numBackslashes / 2) + value;
+      } else {
+        // Odd number of backslashes: treat as escaped placeholder
+        return (
+          backslashes.slice(0, Math.floor(numBackslashes / 2)) + `{${key}}`
+        );
+      }
+    }
+  );
 
   return templateContent;
 }
