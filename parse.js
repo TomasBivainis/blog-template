@@ -39,35 +39,17 @@ function parseMarkdownPosts(postsFolder, parsedPostsFolder, blogConfig) {
       parseMetadata(splitData[1].trim(), postMetaData);
       postMetaData["name"] = file.split(".")[0] + ".html";
 
-      elements["title"] = wrapContent(
-        file.split(".")[0].replaceAll("_", " "),
-        "h1",
-        "title"
-      );
-      elements["content"] = wrapContent(marked(content), "div", "content");
-      elements["date"] = wrapContent(postMetaData["date"], "div", "date");
-      elements["catagories"] = wrapContent(
-        postMetaData["catagories"],
-        "span",
-        "catagories"
-      );
-      elements["header"] = wrapContent(postMetaData["title"], "h1", "header");
+      elements["title"] = blogConfig["title"];
+      elements["postTitle"] = file.split(".")[0].replaceAll("_", " ");
+      elements["content"] = marked(content);
+      elements["date"] = postMetaData["date"];
+      elements["catagories"] = postMetaData["catagories"];
+      elements["header"] = postMetaData["title"];
 
       const parsedContent = fillTemplate(elements, postMetaData["template"]);
 
       writePosts(postMetaData["name"], parsedContent, parsedPostsFolder);
     });
-  });
-}
-
-/*
- * Clears the parsed posts.
- */
-function clearDist(distPath) {
-  const files = fs.readdirSync(distPath);
-
-  files.forEach((file) => {
-    fs.rmSync(path.join(distPath, file));
   });
 }
 
@@ -84,13 +66,17 @@ function parseConfigFile(configFilePath) {
 function generateMainPage(srcPath, configData, postsPath) {
   const elements = {};
 
-  elements["header"] = wrapContent(configData["title"], "h1", "header");
-  elements["description"] = wrapContent(
-    configData["description"],
-    "div",
-    "description"
-  );
+  elements["title"] = configData["title"];
+  elements["description"] = configData["description"];
 
+  elements["posts"] = generatePostElement(postsPath);
+
+  const filledTemplate = fillTemplate(elements, "main");
+
+  writePosts("index.html", filledTemplate, srcPath);
+}
+
+function generatePostElement(postsPath) {
   let postsElement = "";
 
   const files = fs.readdirSync(postsPath);
@@ -103,11 +89,7 @@ function generateMainPage(srcPath, configData, postsPath) {
     postsElement += postElement;
   });
 
-  elements["posts"] = wrapContent(postsElement, "div", "posts");
-
-  const filledTemplate = fillTemplate(elements, "main");
-
-  writePosts("index.html", filledTemplate, srcPath);
+  return postsElement;
 }
 
 function copyStyles(stylesPath, distPath) {

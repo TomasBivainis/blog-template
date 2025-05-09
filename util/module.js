@@ -41,7 +41,8 @@ function fillTemplate(elements, template) {
 
   // Replace placeholders in the template with values from properties
   Object.keys(elements).forEach((key) => {
-    const placeholder = new RegExp(`<${key}*(.+)*/>`, "gi");
+    const placeholder = new RegExp(`{${key}}`, "gi");
+
     templateContent = templateContent.replace(placeholder, (match) => {
       return elements[key];
     });
