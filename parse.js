@@ -22,35 +22,42 @@ function writePosts(postName, filledTemplate, parsedPostsFolder) {
  * parsedPostsFolder location.
  */
 function parseMarkdownPosts(postsFolder, parsedPostsFolder, blogConfig) {
-  fs.readdir(postsFolder, (err, files) => {
-    if (err) {
-      return console.error("Unable to scan directory", err);
-    }
+  const posts = [];
 
-    files.forEach((file) => {
-      const fileText = fs.readFileSync(path.join(postsFolder, file), "utf8");
-      const splitData = fileText.split("---\n");
+  const files = fs.readdirSync(postsFolder);
 
-      const content = splitData[2].trim();
+  files.forEach((file) => {
+    const post = {};
 
-      const elements = {};
+    const fileText = fs.readFileSync(path.join(postsFolder, file), "utf8");
+    const splitData = fileText.split("---\n");
 
-      const postMetaData = JSON.parse(JSON.stringify(blogConfig));
-      parseMetadata(splitData[1].trim(), postMetaData);
-      postMetaData["name"] = file.split(".")[0] + ".html";
+    const content = splitData[2].trim();
 
-      elements["title"] = blogConfig["title"];
-      elements["postTitle"] = file.split(".")[0].replaceAll("_", " ");
-      elements["content"] = marked(content);
-      elements["date"] = postMetaData["date"];
-      elements["catagories"] = postMetaData["catagories"];
-      elements["header"] = postMetaData["title"];
+    const elements = {};
 
-      const parsedContent = fillTemplate(elements, postMetaData["template"]);
+    const postMetaData = JSON.parse(JSON.stringify(blogConfig));
+    parseMetadata(splitData[1].trim(), postMetaData);
+    postMetaData["name"] = file.split(".")[0] + ".html";
 
-      writePosts(postMetaData["name"], parsedContent, parsedPostsFolder);
-    });
+    elements["title"] = blogConfig["title"];
+    elements["postTitle"] = file.split(".")[0].replaceAll("_", " ");
+    elements["content"] = marked(content);
+    elements["date"] = postMetaData["date"];
+    elements["catagories"] = postMetaData["catagories"];
+    elements["header"] = postMetaData["title"];
+
+    post["title"] = elements["postTitle"];
+    post["date"] = elements["date"];
+
+    const parsedContent = fillTemplate(elements, postMetaData["template"]);
+
+    posts.push(post);
+
+    writePosts(postMetaData["name"], parsedContent, parsedPostsFolder);
   });
+
+  return posts;
 }
 
 /*
@@ -63,30 +70,26 @@ function parseConfigFile(configFilePath) {
   return data;
 }
 
-function generateMainPage(srcPath, configData, postsPath) {
+function generateMainPage(srcPath, configData, posts) {
   const elements = {};
 
   elements["title"] = configData["title"];
   elements["description"] = configData["description"];
 
-  elements["posts"] = generatePostElement(postsPath);
+  elements["posts"] = generatePostsElement(posts);
 
   const filledTemplate = fillTemplate(elements, "main");
 
   writePosts("index.html", filledTemplate, srcPath);
 }
 
-function generatePostElement(postsPath) {
+function generatePostsElement(posts) {
   let postsElement = "";
 
-  const files = fs.readdirSync(postsPath);
-
-  files.forEach((file) => {
-    let postElement = `<a href="posts/${
-      file.split(".")[0]
-    }.html">${parsePostTitle(file)}</a>`;
-
-    postsElement += postElement;
+  posts.forEach((post) => {
+    postsElement += `<a href="posts/${post["title"].replace(" ", "_")}.html">${
+      post["title"]
+    }<div class="date">${post["date"]}</div></a>`;
   });
 
   return postsElement;
@@ -136,8 +139,18 @@ function main() {
 
   const configData = parseConfigFile(configFilePath);
 
-  parseMarkdownPosts(postsPath, parsedPostsPath, configData);
-  generateMainPage(distPath, configData, postsPath);
+  const posts = parseMarkdownPosts(postsPath, parsedPostsPath, configData);
+
+  posts.sort((x, y) => {
+    if (x["date"] < y["date"]) {
+      return 1;
+    } else if (x["date"] > y["date"]) {
+      return -1;
+    }
+    return 0;
+  });
+
+  generateMainPage(distPath, configData, posts);
   copyStyles(stylesPath, distPath);
 }
 
