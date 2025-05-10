@@ -6,25 +6,21 @@ body {
   font-family: "Roboto", sans-serif;
   line-height: 1.6;
   color: #333;
-  background-color: #f9f9f9;
+  background-color: #f9f9f9; /* Page background color */
   margin: 0;
   padding: 0;
 }
 
-/* General layout */
-.container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-  background: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  min-height: 100vh;
-}
-
-/* Header styles */
+/* Sticky header styles */
 header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: #fff; /* Header background color */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for separation */
+  padding: 10px 20px;
   text-align: center;
-  margin-bottom: 40px;
+  border-bottom: 1px solid #eee;
 }
 
 header h1 {
@@ -35,6 +31,16 @@ header h1 {
 header p {
   font-size: 1.2em;
   color: #666;
+  margin: 5px 0 0;
+}
+
+/* General layout */
+.container {
+  width: 100%; /* Full width */
+  padding: 20px;
+  background-color: #f9f9f9; /* Matches the body background */
+  min-height: calc(100vh - 60px); /* Adjust for header height */
+  box-sizing: border-box;
 }
 
 /* Navigation links */
@@ -45,6 +51,23 @@ nav a {
 }
 
 nav a:hover {
+  text-decoration: underline;
+}
+
+/* Navbar styles */
+.navbar {
+  text-align: left;
+  padding: 10px 20px;
+}
+
+#navbar-title {
+  font-size: 1.5em; /* Slightly smaller than post titles */
+  font-weight: 700;
+  color: #333;
+  text-decoration: none;
+}
+
+#navbar-title:hover {
   text-decoration: underline;
 }
 
@@ -101,7 +124,28 @@ footer a:hover {
   background-color: #f0f0f0;
 }
 
-#title {
-  color: #333;
-  margin-top: 1.5em;
+/* Content styles */
+.content {
+  max-width: 800px; /* Limit the width for better readability */
+  margin: 20px auto; /* Center the content and add vertical spacing */
+  background-color: #ffffff; /* White background for contrast */
+  padding: 20px 30px; /* Add padding inside the content area */
+  border-radius: 8px; /* Rounded corners for a modern look */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+/* Post title styles */
+.content h1 {
+  font-size: 2.2em; /* Slightly smaller than the default */
+  margin-top: 10px; /* Reduce the top margin */
+  margin-bottom: 0; /* Add a small gap between the title and the date */
+  color: #333; /* Keep the title prominent */
+}
+
+/* Post date styles */
+#date {
+  font-size: 0.9em; /* Smaller font size for the date */
+  color: #888; /* Grey color for less visibility */
+  margin-top: 0; /* Remove unnecessary top margin */
+  margin-bottom: 30px; /* Add spacing below the date */
 }

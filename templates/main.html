@@ -7,20 +7,23 @@
     <title>{title}</title>
   </head>
   <body>
-    <div class="container">
-      <!-- Header Section -->
-      <header>
-        <h1><a href="index.html" id="title">{title}</a></h1>
+    <!-- Header Section -->
+    <header>
+      <nav class="navbar">
+        <a href="index.html" id="navbar-title">{title}</a>
+      </nav>
+    </header>
+
+    <!-- Main Content Section -->
+    <main>
+      <div class="content">
         <p id="description">{description}</p>
-      </header>
-      <!-- Posts Section -->
-      <main>
         <h2>Posts</h2>
         <div id="posts">{posts}</div>
-      </main>
+      </div>
+    </main>
 
-      <!-- Footer Section -->
-      <footer></footer>
-    </div>
+    <!-- Footer Section -->
+    <footer></footer>
   </body>
 </html>

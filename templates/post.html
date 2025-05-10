@@ -7,23 +7,25 @@
     <title>{postTitle}</title>
   </head>
   <body>
-    <div class="container">
-      <!-- Header Section -->
-      <header>
-        <h1><a href="../index.html" id="title">{title}</a></h1>
+    <!-- Header Section -->
+    <header>
+      <nav class="navbar">
+        <a href="../index.html" id="navbar-title">{title}</a>
+      </nav>
+    </header>
+
+    <!-- Main Content Section -->
+    <main>
+      <div class="content">
         <h1>{postTitle}</h1>
         <div id="date">{date}</div>
-      </header>
-
-      <!-- Post Content Section -->
-      <main>
         <article>
           <div id="content">{content}</div>
         </article>
-      </main>
+      </div>
+    </main>
 
-      <!-- Footer Section -->
-      <footer></footer>
-    </div>
+    <!-- Footer Section -->
+    <footer></footer>
   </body>
 </html>
