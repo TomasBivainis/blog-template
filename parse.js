@@ -87,9 +87,11 @@ function generatePostsElement(posts) {
   let postsElement = "";
 
   posts.forEach((post) => {
-    postsElement += `<a href="posts/${post["title"].replace(" ", "_")}.html">${
-      post["title"]
-    }<div class="date">${post["date"]}</div></a>`;
+    postsElement += `
+      <a href="posts/${post["title"].replace(" ", "_")}.html">
+        <div class="title">${post["title"]}</div>
+        <div class="date">${post["date"]}</div>
+      </a>`;
   });
 
   return postsElement;
