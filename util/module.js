@@ -61,10 +61,16 @@ function fillTemplate(elements, template) {
   return templateContent;
 }
 
+/*
+ * Takes the file name and returns the name of the post.
+ */
 function parsePostTitle(fileName) {
   return fileName.split(".")[0].replace("_", " ");
 }
 
+/*
+ * Converts the typical "yyyy-mm-dd" date format to "{month's first 3 letters} dd, yyyy" date format.
+ */
 function convertDate(date) {
   date = date.split("-");
 
