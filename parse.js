@@ -7,6 +7,7 @@ const {
   wrapContent,
   fillTemplate,
   parsePostTitle,
+  convertDate,
 } = require("./util/module");
 
 /*
@@ -43,12 +44,12 @@ function parseMarkdownPosts(postsFolder, parsedPostsFolder, blogConfig) {
     elements["title"] = blogConfig["title"];
     elements["postTitle"] = file.split(".")[0].replaceAll("_", " ");
     elements["content"] = marked(content);
-    elements["date"] = postMetaData["date"];
+    elements["date"] = convertDate(postMetaData["date"]);
     elements["catagories"] = postMetaData["catagories"];
     elements["header"] = postMetaData["title"];
 
     post["title"] = elements["postTitle"];
-    post["date"] = elements["date"];
+    post["date"] = postMetaData["date"];
 
     const parsedContent = fillTemplate(elements, postMetaData["template"]);
 
@@ -90,7 +91,7 @@ function generatePostsElement(posts) {
     postsElement += `
       <a href="posts/${post["title"].replace(" ", "_")}.html">
         <div class="title">${post["title"]}</div>
-        <div class="date">${post["date"]}</div>
+        <div class="date">${convertDate(post["date"])}</div>
       </a>`;
   });
 
