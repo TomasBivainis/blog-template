@@ -30,6 +30,9 @@ function parseMarkdownPosts(postsFolder, parsedPostsFolder, blogConfig) {
   files.forEach((file) => {
     const post = {};
 
+    if (fs.lstatSync(path.join(postsFolder, file)).isDirectory()) return;
+    if (file.split(".")[1] !== "md") return;
+
     const fileText = fs.readFileSync(path.join(postsFolder, file), "utf8");
     const splitData = fileText.split("---\n");
 
