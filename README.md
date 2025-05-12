@@ -32,7 +32,7 @@ The contents of the markdown file consists of 2 parts: the data and the post. Th
 
 If you want an example of a blog post, check out the given example posts in the `posts` folder.
 
-Keep in mind, when generating the site, the framework scans the `posts` folder non-recursivelly. Meaning that markdown posts kept in a folder insde `posts` will not be generated.
+Keep in mind, when generating the site, the framework scans the `posts` folder non-recursivelly. Meaning that markdown posts kept in a folder insde `posts` will not be generated. Files that are not markdown files (files whose extensions are not `.md`) will also be ignored.
 
 ## Customisation
 
