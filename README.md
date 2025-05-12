@@ -17,10 +17,10 @@
 </p>
 
 <p align="center">
-  This project offers a simple to use, minimalist blog template built with node.js.
+  This project offers a simple-to-use, minimalist blog template built with node.js.
 </p>
 
-## Instalation
+## Installation
 
 To use this template, fork it and clone it to your computer.
 
@@ -28,17 +28,17 @@ To use this template, fork it and clone it to your computer.
 
 Write posts in markdown in the `posts` folder. The name of the file is the name of the post, the `_` symbol should be used instead of spaces in the file name. They will be replace with spaces in the blog.
 
-The contents of the markdown file consists of 2 parts: the data and the post. The data is at the start of the file seperated by `---` from front and back. The data must contain the date, which can be enter in this format: `date: yyyy-mm-dd`. The rest of the file is just the content of the blog post.
+The contents of the markdown file consists of 2 parts: the data and the post. The data is at the start of the file separated by `---` from front and back. The data must contain the date, which can be enter in this format: `date: yyyy-mm-dd`. The rest of the file is just the content of the blog post.
 
 If you want an example of a blog post, check out the given example posts in the `posts` folder.
 
-Keep in mind, when generating the site, the framework scans the `posts` folder non-recursivelly. Meaning that markdown posts kept in a folder insde `posts` will not be generated. Files that are not markdown files (files whose extensions are not `.md`) will also be ignored.
+Keep in mind, when generating the site, the framework scans the `posts` folder non-recursively. Meaning that markdown posts kept in a folder inside `posts` will not be generated. Files that are not markdown files (files whose extensions are not `.md`) will also be ignored.
 
 ## Customisation
 
 If you would like to change the style of the website, you can change the css style sheet which you can find in the directory `styles/style.css`. It is linked to every HTML file.
 
-To change the structure of the website or understand what the structure of the blog is, you can check out the template files insede the `templates` folder. Be aware, that words surrounded by curly braces are considered variables which will be raplaced by their content when generating the website (e.g. `{variable}`). If you want to just use the curly braces, you can escape them with `\` (e.g. `\{not a variable}`).
+To change the structure of the website or understand what the structure of the blog is, you can check out the template files inside the `templates` folder. Be aware, that words surrounded by curly braces are considered variables which will be replaced by their content when generating the website (e.g. `{variable}`). If you want to just use the curly braces, you can escape them with `\` (e.g. `\{not a variable}`).
 
 ## License
 
