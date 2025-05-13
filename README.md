@@ -1,9 +1,9 @@
 <h1 align="center"> 
-  Blog Template
+  Hyde
 </h1>
 
 <p align="center"> 
-  <strong>Create your block faster.</strong><br> 
+  <strong>Create your blog faster.</strong><br> 
   Use what you already know and focus on writing.
 </p>
 
@@ -17,7 +17,7 @@
 </p>
 
 <p align="center">
-  This project offers a simple-to-use, minimalist blog template built with node.js.
+  Hyde is a simple-to-use, minimalist blog static site generator in Node.js and JavaScript.
 </p>
 
 ## Installation
@@ -40,10 +40,14 @@ If you would like to change the style of the website, you can change the css sty
 
 To change the structure of the website or understand what the structure of the blog is, you can check out the template files inside the `templates` folder. Be aware, that words surrounded by curly braces are considered variables which will be replaced by their content when generating the website (e.g. `{variable}`). If you want to just use the curly braces, you can escape them with `\` (e.g. `\{not a variable}`).
 
+## Inspiration
+
+This project was inspired by [Jekyll](https://github.com/jekyll/jekyll). Credit to all the people who have worked on it.
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Issues
 
-For issues, please open a [GitHub issue](https://github.com/TomasBivainis/blog-template/issues).
+For issues, please open a [GitHub issue](https://github.com/TomasBivainis/hyde/issues).
