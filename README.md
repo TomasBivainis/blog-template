@@ -1,9 +1,9 @@
 <h1 align="center"> 
-  Blog Template
+  Hyde
 </h1>
 
 <p align="center"> 
-  <strong>Create your block faster.</strong><br> 
+  <strong>Create your blog faster.</strong><br> 
   Use what you already know and focus on writing.
 </p>
 
@@ -17,7 +17,7 @@
 </p>
 
 <p align="center">
-  This project offers a simple-to-use, minimalist blog template built with node.js.
+  Hyde is a simple-to-use, minimalist blog static site generator in Node.js and JavaScript.
 </p>
 
 ## Installation
@@ -46,4 +46,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Issues
 
-For issues, please open a [GitHub issue](https://github.com/TomasBivainis/blog-template/issues).
+For issues, please open a [GitHub issue](https://github.com/TomasBivainis/hyde/issues).
