@@ -40,6 +40,10 @@ If you would like to change the style of the website, you can change the css sty
 
 To change the structure of the website or understand what the structure of the blog is, you can check out the template files inside the `templates` folder. Be aware, that words surrounded by curly braces are considered variables which will be replaced by their content when generating the website (e.g. `{variable}`). If you want to just use the curly braces, you can escape them with `\` (e.g. `\{not a variable}`).
 
+## Inspiration
+
+This project was inspired by [Jekyll](https://github.com/jekyll/jekyll). Credit to all the people who have worked on it.
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
